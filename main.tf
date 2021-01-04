@@ -43,38 +43,8 @@ resource "aws_subnet" "myapp-subnet-1" {
   }
 }
 
-/*resource "aws_security_group" "myapp-sg" {
+resource "aws_security_group" "myapp-sg" {
   name   = "myapp-sg"
-  vpc_id = aws_vpc.myapp-vpc.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-    prefix_list_ids = []
-  }
-
-  tags = {
-    Name = "${var.env_prefix}-security-group"
-  }
-}*/
-
-resource "aws_default_security_group" "myapp-sg" {
   vpc_id = aws_vpc.myapp-vpc.id
 
   ingress {
@@ -112,7 +82,7 @@ resource "aws_internet_gateway" "myapp-igw" {
    }
 }
 
-/*resource "aws_route_table" "myapp-route-table" {
+resource "aws_route_table" "myapp-route-table" {
    vpc_id = aws_vpc.myapp-vpc.id
 
    route {
@@ -125,7 +95,7 @@ resource "aws_internet_gateway" "myapp-igw" {
    tags = {
      Name = "${var.env_prefix}-route-table"
    }
- }*/
+ }
 
 resource "aws_default_route_table" "myapp-route-table" {
    default_route_table_id = aws_vpc.myapp-vpc.main_route_table_id
@@ -148,7 +118,7 @@ resource "aws_route_table_association" "a-rtb-subnet" {
   route_table_id = aws_default_route_table.myapp-route-table.id
 }
 
-/*resource "aws_security_group_rule" "web-http" {
+resource "aws_security_group_rule" "web-http" {
   security_group_id = aws_vpc.myapp-vpc.default_security_group_id
   type              = "ingress"
   from_port         = 8080
@@ -164,46 +134,7 @@ resource "aws_security_group_rule" "server-ssh" {
   to_port           = 22
   protocol          = "tcp"
   cidr_blocks       = [var.my_ip]
-}*/
-
-/*resource "aws_default_security_group" "default" {
-  vpc_id = aws_vpc.myapp-vpc.id
-
-  ingress {
-    protocol  = -1
-    self      = true
-    from_port = 0
-    to_port   = 0
-  }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [var.my_ip]
-  }
-
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
-    cidr_blocks     = ["0.0.0.0/0"]
-    prefix_list_ids = []
-  }
-
-  tags = {
-    Name = "${var.env_prefix}-security-group"
-  }
 }
-*/
-
 
 resource "aws_key_pair" "ssh-key" {
   key_name   = "myapp-key"
@@ -211,29 +142,6 @@ resource "aws_key_pair" "ssh-key" {
 }
 
 resource "aws_instance" "myapp-server" {
-  ami                         = data.aws_ami.amazon-linux-image.id
-  instance_type               = var.instance_type
-  key_name                    = aws_key_pair.ssh-key.key_name
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.myapp-subnet-1.id
-  vpc_security_group_ids      = [aws_default_security_group.myapp-sg.id]
-  availability_zone			  = var.avail_zone
-
-  tags = {
-    Name = "${var.env_prefix}-server"
-  }
-
-  user_data = <<-EOF
-                 #!/bin/bash
-                 sudo yum update -y && sudo yum install -y docker
-                 sudo systemctl start docker
-
-                 sudo usermod -aG docker ec2-user
-                 docker run -p 8080:80 nginx
-              EOF
-}
-
-/*resource "aws_instance" "myapp-server-2" {
   ami                         = data.aws_ami.amazon-linux-image.id
   instance_type               = var.instance_type
   key_name                    = "test"
@@ -253,7 +161,7 @@ resource "aws_instance" "myapp-server" {
                  usermod -aG docker ec2-user
                  docker run -p 8080:8080 nginx
               EOF
-}*/
+}
 
 output "server-ip" {
     value = aws_instance.myapp-server.public_ip
