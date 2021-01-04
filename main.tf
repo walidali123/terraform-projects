@@ -97,8 +97,8 @@ resource "aws_route_table" "myapp-route-table" {
    }
  }
 
-resource "aws_default_route_table" "myapp-route-table" {
-   default_route_table_id = aws_vpc.myapp-vpc.main_route_table_id
+resource "aws_route_table" "myapp-route-table" {
+   vpc_id = aws_vpc.myapp-vpc.id
 
    route {
      cidr_block = "0.0.0.0/0"
@@ -115,30 +115,47 @@ resource "aws_default_route_table" "myapp-route-table" {
 # Associate subnet with Route Table
 resource "aws_route_table_association" "a-rtb-subnet" {
   subnet_id      = aws_subnet.myapp-subnet-1.id
-  route_table_id = aws_default_route_table.myapp-route-table.id
+  route_table_id = aws_route_table.myapp-route-table.id
 }
 
-resource "aws_security_group_rule" "web-http" {
-  security_group_id = aws_vpc.myapp-vpc.default_security_group_id
-  type              = "ingress"
-  from_port         = 8080
-  to_port           = 8080
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-}
+resource "aws_security_group" "myapp-sg" {
+    name = "myapp-sg"
+    vpc_id = aws_vpc.myapp-vpc.id
 
-resource "aws_security_group_rule" "server-ssh" {
-  security_group_id = aws_vpc.myapp-vpc.default_security_group_id
-  type              = "ingress"
-  from_port         = 22
-  to_port           = 22
-  protocol          = "tcp"
-  cidr_blocks       = [var.my_ip]
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = [var.my_ip]
+    }
+
+    ingress {
+        from_port = 8080
+        to_port = 8080
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+        prefix_list_ids = []
+    }
+
+    tags = {
+        Name = "${var.env_prefix}-default-sg"
+    }
 }
 
 resource "aws_key_pair" "ssh-key" {
   key_name   = "myapp-key"
   public_key = var.ssh_key
+}
+
+output "server-ip" {
+    value = aws_instance.myapp-server.public_ip
 }
 
 resource "aws_instance" "myapp-server" {
@@ -148,7 +165,7 @@ resource "aws_instance" "myapp-server" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.myapp-subnet-1.id
   vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
-  availability_zone			  = var.avail_zone
+  availability_zone			      = var.avail_zone
 
   tags = {
     Name = "${var.env_prefix}-server"
@@ -163,6 +180,4 @@ resource "aws_instance" "myapp-server" {
               EOF
 }
 
-output "server-ip" {
-    value = aws_instance.myapp-server.public_ip
-}
+
