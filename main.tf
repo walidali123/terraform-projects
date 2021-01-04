@@ -145,7 +145,7 @@ resource "aws_security_group" "myapp-sg" {
     }
 
     tags = {
-        Name = "${var.env_prefix}-myapp-sg"
+        Name = "${var.env_prefix}-sg"
     }
 }
 
