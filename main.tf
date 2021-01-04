@@ -28,6 +28,14 @@ resource "aws_subnet" "myapp-subnet-1" {
     }
 }
 
+output "dev-vpc-id" {
+    value = aws_vpc.development-vpc.id
+}
+
+output "dev-subnet-id" {
+    value = aws_subnet.dev-subnet-1.id
+}
+
 data "aws_vpc" "existing_vpc" {
     default = true
 }
@@ -40,4 +48,3 @@ resource "aws_subnet" "dev-subnet-2" {
         Name = "subnet-2-default"
     }
 }
-
