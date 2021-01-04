@@ -10,7 +10,9 @@ variable cidr_blocks {
     }))
 }
 
-variable avail_zone {}
+variable avail_zone {
+    default = "eu-west-3a"
+}
 
 resource "aws_vpc" "myapp-vpc" {
     cidr_block = var.cidr_blocks[0].cidr_block
