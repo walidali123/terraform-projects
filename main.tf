@@ -13,7 +13,7 @@ variable avail_zone {}
 resource "aws_vpc" "myapp-vpc" {
     cidr_block = var.cidr_blocks[0].cidr_block
     tags = {
-        Name: var.cidr_blocks[0].name
+        Name = var.cidr_blocks[0].name
     }
 }
 
@@ -22,7 +22,7 @@ resource "aws_subnet" "myapp-subnet-1" {
     cidr_block = var.cidr_blocks[1].cidr_block
     availability_zone = var.avail_zone
     tags = {
-        Name: var.cidr_blocks[1].name
+        Name = var.cidr_blocks[1].name
     }
 }
 
