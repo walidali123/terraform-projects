@@ -30,7 +30,7 @@ output "ami_id" {
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
-      Name: "${var.env_prefix}-vpc"
+      Name = "${var.env_prefix}-vpc"
   }
 }
 
@@ -39,7 +39,7 @@ resource "aws_subnet" "myapp-subnet-1" {
   cidr_block = var.subnet_1_cidr_block
   availability_zone = var.avail_zone
   tags = {
-      Name: "${var.env_prefix}-subnet-1"
+      Name = "${var.env_prefix}-subnet-1"
   }
 }
 
