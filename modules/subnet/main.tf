@@ -3,14 +3,14 @@ resource "aws_subnet" "myapp-subnet-1" {
     cidr_block = var.subnet_cidr_block
     availability_zone = var.avail_zone
     tags = {
-        Name: "${var.env_prefix}-subnet-1"
+        Name = "${var.env_prefix}-subnet-1"
     }
 }
 
 resource "aws_internet_gateway" "myapp-igw" {
     vpc_id = var.vpc_id
     tags = {
-        Name: "${var.env_prefix}-igw"
+        Name = "${var.env_prefix}-igw"
     }
 }
 
@@ -22,6 +22,6 @@ resource "aws_default_route_table" "main-rtb" {
         gateway_id = aws_internet_gateway.myapp-igw.id
     }
     tags = {
-        Name: "${var.env_prefix}-main-rtb"
+        Name = "${var.env_prefix}-main-rtb"
     }
 }
