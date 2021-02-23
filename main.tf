@@ -157,25 +157,3 @@ resource "aws_instance" "myapp-server-two" {
                  docker run -p 8080:8080 nginx
               EOF
 }
-
-resource "aws_instance" "myapp-server-three" {
-  ami                         = data.aws_ami.amazon-linux-image.id
-  instance_type               = var.instance_type
-  key_name                    = "myapp-key"
-  associate_public_ip_address = true
-  subnet_id                   = aws_subnet.myapp-subnet-1.id
-  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
-  availability_zone			      = var.avail_zone
-
-  tags = {
-    Name = "${var.env_prefix}-server-three"
-  }
-
-  user_data = <<EOF
-                 #!/bin/bash
-                 apt-get update && apt-get install -y docker-ce
-                 systemctl start docker
-                 usermod -aG docker ec2-user
-                 docker run -p 8080:8080 nginx
-              EOF
-}
