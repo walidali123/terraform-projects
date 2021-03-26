@@ -58,13 +58,6 @@ resource "aws_security_group" "myapp-sg" {
     cidr_blocks = [var.my_ip]
   }
 
-  ingress {
-    from_port   = 8080
-    to_port     = 8080
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port       = 0
     to_port         = 0
@@ -97,7 +90,7 @@ resource "aws_route_table" "myapp-route-table" {
    # default route, mapping VPC CIDR block to "local", created implicitly and cannot be specified.
 
    tags = {
-     Name = "${var.env_prefix}-route-table"
+     Name = "${var.env_prefix}-route-table-test"
    }
  }
 
@@ -128,9 +121,36 @@ resource "aws_instance" "myapp-server" {
   tags = {
     Name = "${var.env_prefix}-server"
   }
+}
+
+resource "aws_instance" "myapp-server-two" {
+  ami                         = data.aws_ami.amazon-linux-image.id
+  instance_type               = var.instance_type
+  key_name                    = "myapp-key"
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
+  availability_zone			      = var.avail_zone
+
+  tags = {
+    Name = "${var.env_prefix}-server"
+  }
 
   provisioner "local-exec" {
     working_dir = "../ansible"
     command = "ansible-playbook --inventory ${self.public_ip}, --private-key ${var.ssh_key_private} --user ec2-user deploy-docker-new-user.yaml"
   }
 }
+
+/* 
+resource "null_resource" "configure_server" {
+  triggers = {
+    trigger = aws_instance.myapp-server.public_ip
+  }
+
+  provisioner "local-exec" {
+    working_dir = "../ansible"
+    command = "ansible-playbook --inventory ${aws_instance.myapp-server.public_ip}, --private-key ${var.ssh_key_private} --user ec2-user deploy-docker-new-user.yaml"
+  }
+}
+*/
