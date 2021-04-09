@@ -136,10 +136,10 @@ resource "aws_instance" "myapp-server-two" {
     Name = "${var.env_prefix}-server"
   }
 
-  provisioner "local-exec" {
+  /* provisioner "local-exec" {
     working_dir = "../ansible"
     command = "ansible-playbook --inventory ${self.public_ip}, --private-key ${var.ssh_key_private} --user ec2-user deploy-docker-new-user.yaml"
-  }
+  } */
 }
 
 /* 
