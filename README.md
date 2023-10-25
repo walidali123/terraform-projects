@@ -1,8 +1,8 @@
-### initialize
+## initialize
 
     terraform init
 
-### preview terraform actions
+## preview terraform actions
 
     terraform plan
 
