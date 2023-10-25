@@ -1,27 +1,30 @@
 provider "aws" {
-    region = "eu-west-2"
+    region = "us-east-1"
+    access_key = "AKIAXUNFUWKEF4OTNEKG"
+    secret_key = "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"
+
 }
 
 variable vpc_cidr_block {}
 variable private_subnet_cidr_blocks {}
 variable public_subnet_cidr_blocks {}
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "azs" {}
 
 
 module "myapp-vpc" {
     source = "terraform-aws-modules/vpc/aws"
-    version = "2.64.0"
+    version =  "5.1.2"
 
     name = "myapp-vpc"
     cidr = var.vpc_cidr_block
     private_subnets = var.private_subnet_cidr_blocks
     public_subnets = var.public_subnet_cidr_blocks
-    azs = data.aws_availability_zones.available.names 
+    azs = data.aws_availability_zones.azs.names 
     
     enable_nat_gateway = true
     single_nat_gateway = true
-    enable_dns_hostnames = true
+    enable_dns_hostnames = true 
 
     tags = {
         "kubernetes.io/cluster/myapp-eks-cluster" = "shared"
@@ -36,5 +39,4 @@ module "myapp-vpc" {
         "kubernetes.io/cluster/myapp-eks-cluster" = "shared"
         "kubernetes.io/role/internal-elb" = 1 
     }
-
 }
