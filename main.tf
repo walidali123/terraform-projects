@@ -1,5 +1,7 @@
 provider "aws" {
     region = "eu-west-3"
+    access_key = "xxx"
+    secret_key = "xxx"
 }
 
 variable cidr_blocks {
