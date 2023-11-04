@@ -123,7 +123,7 @@ resource "aws_instance" "myapp-server" {
   }
 }
 
-resource "aws_instance" "myapp-server-two" {
+/*resource "aws_instance" "myapp-server-two" {
   ami                         = data.aws_ami.amazon-linux-image.id
   instance_type               = var.instance_type
   key_name                    = "myapp-key"
